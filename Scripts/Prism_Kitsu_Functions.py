@@ -86,13 +86,7 @@ import tempfile
 import shutil
 import ruamel.yaml as yaml
 
-try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
-except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+from qt_compat import *
 
 from PrismUtils.Decorators import err_catcher_plugin as err_catcher
 from Prism_Kitsu_Global_Functions import *
