@@ -13,6 +13,14 @@ To install:
 Your folder path should look like this: **Prism/Plugins/ProjectManagers/Kitsu/Scripts and external_modules** folder
 If it doesn't the plugin won't load.
 
+When configuring the Kitsu site address, enter the base URL of your server
+without the trailing `/api` segment. The plugin normalizes the address for the
+current Kitsu API automatically.
+
+For self-hosted Kitsu instances (for example on a QNAP NAS), see [docs/SETUP_QNAP_KITSU.md](docs/SETUP_QNAP_KITSU.md) for a step-by-step setup guide covering connectivity, plugin placement, and sync tips.
+
+For headless debugging (when Qt bindings are not installed), set `PRISM_QT_COMPAT=stub` in your environment before importing the plugin modules. This exposes lightweight stubs so you can run non-UI checks without requiring PySide on the machine running the tests.
+
 Features:
 - Sync shots and assets between Kitsu and Prism including frame range, descriptions and thumbnails
 - Sync everything or only assigned shots and assets

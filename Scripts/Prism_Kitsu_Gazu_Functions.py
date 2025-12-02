@@ -1,13 +1,7 @@
 import os
 import gazu
 
-try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
-except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+from qt_compat import *
 
 
 from Prism_Kitsu_Tools_Functions import *
@@ -19,8 +13,7 @@ def Connect(self, host, user, password, projectName):
     # Connect to server
     if self.tokens is None:
         try:
-            host = removeLastSlash(host)
-            host = host + "/api"
+            host = normalize_host(host)
             gazu.set_host(host)
             if not gazu.client.host_is_up():
                 raise ConnectionError(
@@ -34,7 +27,7 @@ def Connect(self, host, user, password, projectName):
         try:
             self.tokens = gazu.log_in(user, password)
 
-        except:
+        except Exception:
             message = (
                 "Login verification failed.\n"
                 "Please ensure your username and "
@@ -44,10 +37,21 @@ def Connect(self, host, user, password, projectName):
             QMessageBox.warning(QWidget(), str("Kitsu Error"), str(message))
             return "Connection error"
 
-    QMessageBox.warning(QWidget(), str("Kitsu Logged in"), str("Logged in"))
-
     # Lastly, get the project dict and return it
     project_dict = gazu.project.get_project_by_name(projectName)
+    if project_dict is None:
+        QMessageBox.warning(
+            QWidget(),
+            str("Kitsu Error"),
+            str(
+                "The project could not be found on the Kitsu server.\n"
+                "Please verify the project name or your Kitsu permissions."
+            ),
+        )
+        return "Project not found"
+
+    QMessageBox.information(QWidget(), str("Kitsu Logged in"), str("Logged in"))
+
     return project_dict
 
 
@@ -56,6 +60,20 @@ def removeLastSlash(adress):
         adress = adress[:-1]
 
     return adress
+
+
+def normalize_host(address):
+    """Return a normalized Kitsu API root without duplicated /api suffixes."""
+
+    if not address:
+        raise ValueError("Kitsu host is empty. Please enter a server URL.")
+
+    cleaned = address.strip()
+    if cleaned.lower().endswith("/api"):
+        cleaned = cleaned[:-4]
+
+    cleaned = removeLastSlash(cleaned)
+    return cleaned + "/api"
 
 
 def GetUrl(obj_id, section):
@@ -216,7 +234,7 @@ def DownloadThumbnail(self, name, preview_file_id, folder_name):
             if os.path.isfile(previewImgPath + ".jpg"):
                 try:
                     os.remove(previewImgPath + ".jpg")
-                except e:
+                except Exception:
                     pass
             return "", False, True  # File updated
 
@@ -292,7 +310,7 @@ def createKitsuSequence(project_dict, sequence_name, episode_dict):
         else:
             sequence_dict = gazu.shot.new_sequence(project_dict,
                                                    sequence_name,
-                                                   episode_dicts)
+                                                   episode_dict)
         return sequence_dict, True
 
     else:

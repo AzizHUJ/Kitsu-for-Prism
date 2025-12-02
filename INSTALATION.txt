@@ -1,0 +1,50 @@
+Kitsu for Prism: QNAP installation and connection checklist
+==========================================================
+
+Follow these steps to download, install, and connect the plugin to a Kitsu instance running on your QNAP NAS.
+
+1) Download the plugin
+   - Option A: Click "Code" → "Download ZIP" on GitHub, then extract the archive.
+   - Option B: `git clone https://github.com/EmberLightVFX/Kitsu-for-Prism.git`
+
+2) Rename the folder
+   - Rename the extracted/clone root folder to exactly: Kitsu
+
+3) Copy into Prism
+   - Place the Kitsu folder into your Prism installation at:
+       Prism/Plugins/ProjectManagers/Kitsu/
+   - Ensure both subfolders are present:
+       Prism/Plugins/ProjectManagers/Kitsu/Scripts/
+       Prism/Plugins/ProjectManagers/Kitsu/external_modules/
+
+4) Restart Prism (and any open DCC apps)
+   - This refreshes Prism so the plugin loads.
+
+5) Enable and configure the plugin
+   - Open Prism → Settings → Project Managers → Kitsu.
+   - Check "Enable Kitsu integration".
+   - Kitsu site: enter the full base URL of your NAS Kitsu (e.g. https://nas.example.com/kitsu). Do NOT append /api.
+   - Project Name: enter the exact project name from Kitsu.
+   - Username/Password: use a Kitsu account with access to the project.
+   - (Optional) Only sync user assigned tasks: enable if you want to restrict sync to your assignments.
+   - (Optional) Set first frame to 1: enable if your Kitsu shots list frame counts instead of start frames.
+
+6) Verify connectivity
+   - Click "Check login" in the Kitsu settings.
+   - If it fails, confirm: correct URL (no trailing /api), valid credentials, workstation can reach the NAS, and SSL certificate is trusted.
+
+7) First sync
+   - In the Prism Project Browser, trigger a sync to pull shots/assets. Confirm frame ranges, descriptions, and thumbnails match Kitsu.
+
+8) Publish to Kitsu
+   - Use Prism publish for renders. Image sequences are automatically converted to a temporary movie for upload; the temp file is removed afterward.
+
+9) QNAP-specific notes
+   - If using HTTPS with a self-signed cert, add it to your OS trust store so Prism/Python accepts the connection.
+   - Ensure the NAS firewall/reverse proxy exposes the Kitsu API route (typically /api behind your base URL).
+   - Keep NAS and workstation clocks in sync to avoid confusing timestamps.
+
+10) Troubleshooting
+   - Plugin won’t load: re-check the folder path and that Scripts/ and external_modules/ sit directly inside Kitsu/.
+   - Tasks missing: temporarily disable "Only sync user assigned tasks" to test a full sync.
+   - Slow uploads: large sequences transcode before upload; try shorter ranges or lower-res previews for quick checks.
